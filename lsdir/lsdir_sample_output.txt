@@ -1,0 +1,147 @@
+$ pwd
+/home/users1/dr63126/Comp322
+
+$ gcc lsdir.c
+
+$ ./a.out 
+..
+.
+output2.txt
+mywc.c
+lsdir.c
+fileaccess.c
+a.out
+lsdir_script.txt
+output1.txt
+test.c
+
+$ ls -l
+total 36
+-rwx------. 1 dr63126 users 7816 Apr 14 19:25 a.out
+-rw-r--r--. 1 dr63126 users 3175 Feb 17 21:26 fileaccess.c
+-rw-r--r--. 1 dr63126 users  833 Apr  5 04:10 lsdir.c
+-rwxr-xr-x. 1 dr63126 users  147 Apr 14 17:49 lsdir_script.txt
+-rw-r--r--. 1 dr63126 users 2971 Apr  6 04:22 mywc.c
+-rw-------. 1 dr63126 users  450 Apr 14 17:50 output1.txt
+-rw-------. 1 dr63126 users   87 Apr 14 17:50 output2.txt
+-rw-------. 1 dr63126 users    5 Apr 14 14:18 test.c
+
+$ ./a.out ~/Comp222/
+..
+.
+asmt2_Rojas.c
+asmt1_Rojas
+asmt3_Rojas.c
+asmt1_Rojas.c
+asmt5_Rojas.c
+a.out
+asmt4_Rojas.c
+
+$ ls -l ~/Comp222/
+total 60
+-rwx------. 1 dr63126 users 9315 Feb  6 21:09 a
+-rwx------. 1 dr63126 users 9315 Feb  6 21:08 a.out
+-rwx------. 1 dr63126 users 9315 Feb  6 21:03 asmt1_Rojas
+-rw-r--r--. 1 dr63126 users 2140 Jan 13 00:48 asmt1_Rojas.c
+-rw-r--r--. 1 dr63126 users 3896 Jan 13 00:48 asmt2_Rojas.c
+-rw-r--r--. 1 dr63126 users 2338 Jan 13 00:48 asmt3_Rojas.c
+-rw-r--r--. 1 dr63126 users 3003 Jan 13 00:48 asmt4_Rojas.c
+-rw-r--r--. 1 dr63126 users 4604 Jan 13 00:48 asmt5_Rojas.c
+
+$ ./a.out ~/Desktop/
+..
+.
+JGrasp
+
+$ ls -l ~/Desktop/
+total 4
+drwx------. 5 dr63126 users 4096 May 13  2013 JGrasp
+
+$ chmod 755 lsdir_script.txt
+
+$ ./lsdir_script.txt
+-rw-------. 1 dr63126 users    0 Apr 14 19:27 output1.txt
+-rw-------. 1 dr63126 users    5 Apr 14 14:18 test.c
+-rw-------. 1 dr63126 users   87 Apr 14 17:50 output2.txt
+-rw-r--r--. 1 dr63126 users 2971 Apr  6 04:22 mywc.c
+-rw-r--r--. 1 dr63126 users 3175 Feb 17 21:26 fileaccess.c
+-rw-r--r--. 1 dr63126 users  833 Apr  5 04:10 lsdir.c
+-rwx------. 1 dr63126 users 7816 Apr 14 19:25 a.out
+-rwxr-xr-x. 1 dr63126 users  147 Apr 14 17:49 lsdir_script.txt
+
+..
+.
+output2.txt
+mywc.c
+lsdir.c
+fileaccess.c
+a.out
+lsdir_script.txt
+output1.txt
+test.c
+
+Files output1.txt and output2.txt differ
+
+$ cat lsdir.c
+/*
+Daniel Rojas
+Comp 322
+TuTh 12:30PM 
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <dirent.h>
+
+void lsdir(char *path)
+{
+        DIR *dp;
+        struct dirent *dir;
+
+        dp = opendir(path);
+        if (dp == NULL) {
+                fprintf(stderr, "cannot open directory %s: %s\n",
+                        path, strerror(errno));
+                exit(EINVAL);
+        }
+
+        while ( errno = 0, (dir = readdir(dp)) != NULL ) 
+                puts(dir->d_name);
+
+        if (errno != 0) fprintf(stderr, "Error Reading %s: %s\n",
+                                path, strerror(errno));
+
+        return;
+    
+} 
+
+int main(int argc, char* argv[])
+{
+        char *directory;
+
+        if (argc > 2) {
+                fprintf(stderr, "Usage: %s [directory]\n", argv[0]);
+                exit(EINVAL);
+        }
+        if (argc == 2)
+                directory = argv[1];
+        else
+                directory = ".";
+
+        lsdir(directory);
+        return 0;
+
+}
+
+$ cat lsdir_script.txt
+#!/bin/bash
+
+ls -l | grep '^-' | sort -n > output1.txt
+./a.out > output2.txt
+
+cat output1.txt
+cat output2.txt
+diff --brief output1.txt output2.txt
